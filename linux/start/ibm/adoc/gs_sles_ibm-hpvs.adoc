@@ -301,8 +301,8 @@ image::arrow_down_jungle-green-50wide.png[Down arrow, align="center"]
 
 a|
 
-* Build a trusted container image using Hyper Protect Secure Build
-* Publish trusted container image to a trusted registry
+* <<Build a container image>>
+* <<Publish the container image to a registry>>
 * <<Define the contract>>
 
 |===
@@ -469,15 +469,205 @@ NOTE: TO BE COMPLETED
 In this section you prepare a workload container image, publish the container image to a registry, and define the IBM Hyper Protect Services contract that will be used during deployment.
 The steps in this section are the same for cloud and on-premises deployments.
 
-You will use the https://cloud.ibm.com/docs/vpc?topic=vpc-financial-transaction-confidential-computing-on-hyper-protect-virtual-server-for-vpc[PayNow Node.js application], which has been built on a SLE BCI container image and published to a container registry.
+You will use the https://cloud.ibm.com/docs/vpc?topic=vpc-financial-transaction-confidential-computing-on-hyper-protect-virtual-server-for-vpc[PayNow Node.js application], which has been already built on a SLE BCI container image and published to a container registry.
+The steps are also available if you would like to build the PayNow Node.js application on a SLE BCI container.
 
 See https://mediacenter.ibm.com/media/Confidential+Computing+for+a+financial+transaction+using+Hyper+Protect+Virtual+Server+for+VPC/1_vv3j2oo6[confidential computing in action].
 In this demonstration, the PayNow Node.js application shows a financial transaction running without confidential computing and with confidential computing.
 
-// QUESTION: Should this be added?
-// An additional document will describe the steps to securely build and publish the PayNow Node.js application using SLE Base Container Images.
-// Mike: If the steps can be outlined, it might be useful to include here.
-// Terry: I believe this would cause the document to go beyond a getting started guide but I will ask others for their opinion
+=== Build a container image
+
+Building one or more application container images is a necessary step.
+The PayNow Node.js application container image has already been built on a SLE BCI container and published to a container registry.
+You can go to <<Define the contract>> to use the PayNow Node.js application container image or follow the steps below to build your own image of the PayNow Node.js application.
+
+Access to a Linux on s390x instance is required to build the PayNow Node.js application container image.
+These steps will use `git` and `podman` to build and publish the OCI-compliant PayNow Node.js application container image.
+An option is to use an IBM Cloud virtual server instance (VSI) for VPC with a SUSE Linux Enterprise Server https://cloud.ibm.com/docs/vpc?topic=vpc-vsabout-images#vs-s390x-supported-os[s390x stock virtual server image] but any Linux distro on s390x with `git` and `podman` is sufficient.
+
+The https://registry.suse.com/bci/nodejs18/index.html[SLE BCI Node.js 18 Container Image] will be the base for the PayNow Node.js application container image.
+
+. Clone the Pay Now Website sources.
++
+[source, console]
+----
+git clone https://github.com/mfriesenegger/paynow-website.git
+cd paynow-website
+----
+
+. Build the PayNow Node.js application container image.
++
+[source, console]
+----
+podman build -f ./Dockerfile -t slebci-paynow-website
+----
+
+. Start the Verify the PayNow Node.js application container.
++
+[source, console]
+----
+podman run -d --rm --name paynow-website -p 8443:8443 localhost/slebci-paynow-website
+----
++
+You will see similar output.
++
+[source, console]
+----
+6628a61d4e8c427e065c00f140c114e57f0dbd8ddf861752140e43cc77f08d74
+----
+
+. Verify the PayNow Node.js application container has started.
++
+[source, console]
+----
+podman ps
+----
++
+You will see similar output.
++
+[source, console]
+----
+CONTAINER ID  IMAGE                                   COMMAND               CREATED        STATUS            PORTS                   NAMES
+6628a61d4e8c  localhost/slebci-paynow-website:latest  /bin/sh -c npm st...  6 seconds ago  Up 5 seconds ago  0.0.0.0:8443->8443/tcp  paynow-website
+----
+
+. Stop the running PayNow Node.js application container
++
+[source, console]
+----
+podman stop paynow-website
+----
++
+You will see similar output.
++
+[source, console]
+----
+6628a61d4e8c427e065c00f140c114e57f0dbd8ddf861752140e43cc77f08d74
+----
+
+
+=== Publish the container image to a registry
+
+Publishing one or more application container images is a necessary step.
+The PayNow Node.js application container image has already been built on a SLE BCI container and published to a container registry.
+You can go to <<Define the contract>> to use the PayNow Node.js application container image or follow the steps below to publish your own image of the PayNow Node.js application.
+
+Access to the same Linux on s390x instance that built the PayNow Node.js application container image is required to publish the image.
+These steps will use `podman` to publish the OCI-compliant PayNow Node.js application container image.
+A properly configured github account is required to publish the image to your https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry[GitHub Container registry].
+
+. Tag the PayNow Node.js application container image to your GitHub account.
++
+[source, console]
+----
+podman tag localhost/slebci-paynow-website:latest ghcr.io/<github user>/slebci-paynow-website:latest
+----
++
+[NOTE]
+====
+Replace _<github user>_ with your personal github user id.
+====
+
+. Log into the GitHub Container registry.
++
+[source, console]
+----
+podman login ghcr.io
+Username: <github user>
+Password: <github token>
+Login Succeeded!
+----
++
+[NOTE]
+====
+Replace _<github user>_ with your personal github user id.
+
+Replace _<github token>_ with your personal github access token.
+====
+
+. Push the PayNow Node.js application container image.
++
+[source, console]
+----
+podman push ghcr.io/<github user>/slebci-paynow-website:latest
+----
++
+You will see similar output.
++
+[source, console]
+----
+Getting image source signatures
+Copying blob 0ccbad5913ff done  
+Copying blob b326be1c2597 done  
+Copying blob 33514e467d16 done  
+Copying blob bd6fa590b9f7 done  
+Copying blob b6d354fd1660 done  
+Copying config e71fdf2e7a done  
+Writing manifest to image destination
+Storing signatures
+----
++
+[NOTE]
+====
+Replace _<github user>_ with your personal github user id.
+====
+
+. Remove the PayNow Node.js application container image.
++
+[source, console]
+----
+podman rmi ghcr.io/<github user>/slebci-paynow-website:latest
+----
++
+You will see similar output.
++
+[source, console]
+----
+Untagged: ghcr.io/mfriesenegger/slebci-paynow-website:latest
+----
+
+. Confirm that the PayNow Node.js application container image can be pulled from your GitHub Container registry.
++
+[source, console]
+----
+podman pull ghcr.io/<github user>/slebci-paynow-website:latest
+----
++
+You will see similar output.
++
+[source, console]
+----
+Trying to pull ghcr.io/mfriesenegger/slebci-paynow-website:latest...
+Getting image source signatures
+Copying blob 433e70b2cea5 skipped: already exists  
+Copying blob b12c44df6add skipped: already exists  
+Copying blob cc2d0d7ba04c [--------------------------------------] 0.0b / 0.0b
+Copying blob a74519fc309a [--------------------------------------] 0.0b / 0.0b
+Copying blob ed8b5e1d0d7a [--------------------------------------] 0.0b / 0.0b
+Copying config e71fdf2e7a done  
+Writing manifest to image destination
+Storing signatures
+e71fdf2e7ad357830ece71bfc30367f52ab7afa74401d1506cefcb091a62064b
+----
++
+[NOTE]
+====
+Replace _<github user>_ with your personal github user id.
+====
+
+. Logout of ghcr.io.
++
+[source, console]
+----
+podman logout ghcr.io
+----
++
+You will see similar output.
++
+[source, console]
+----
+Removed login credentials for ghcr.io
+----
 
 
 === Define the contract
@@ -491,18 +681,44 @@ A contract is a required definition of the workload configuration in YAML format
 ----
 mkdir slebci-paynow-website
 cd slebci-paynow-website
-vi compose.yml
+vi docker-compose.yml
 ----
++
+Use the following if using the pre-built PayNow Node.js application container image.
 +
 [source, yaml]
 ----
 services:
   paynow:
-    image: ghcr.io/mfriesenegger/slebci-paynow-website@sha256:90e28fdd0a7415d2db5942ddb1a54b7be0ddb79fd58ee50f02d0771226a77a42
+    image: ghcr.io/mfriesenegger/slebci-paynow-website@sha256:ecb229f68aef81ca4a2b7b5a9eb192081fa2a170e44d9e5a28180bb12682ce5d
     ports:
       - "8080:8080"
       - "8443:8443"
 ----
++
+[IMPORTANT]
+====
+The goal is to publish the pre-built image to ghcr.io/suse before this document is published to suse.com.
+====
++
+Or use the following if the PayNow Node.js application container image was built by you and published in your GitHub Container registry.
++
+[source, yaml]
+----
+services:
+  paynow:
+    image: ghcr.io/<github user>/slebci-paynow-website@<sha256 digest>
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+----
++
+[NOTE]
+====
+Replace _<github user>_ with your personal github user id.
+
+Replace _<github digest>_ with the digest information for the in published in your GitHub Container registry.
+====
 
 . Create a base64 encoded tar archive[[base64-encoded-archive]].
 +
@@ -512,6 +728,13 @@ tar -czvf - compose.yml | base64 -w0 > compose.b64
 ----
 
 . Create the contract file.
++
+[source, console]
+----
+vi slebci-paynow-website-contract.yml
+----
++
+Use the following if using the pre-built PayNow Node.js application container image.
 +
 [source, yaml]
 ----
@@ -530,8 +753,33 @@ workload: |
 +
 <1> where <hostname> and <ingestionKey> were noted earlier.
 <2> where <archive> was created in the *Create a base64 encoded tar archive*<<base64-encoded-archive>> step.
++
+Or use the following if the PayNow Node.js application container image was built by you and published in your GitHub Container registry.
++
+[source, yaml]
+----
+env: |
+  type: env
+  logging:
+    logDNA:
+      hostname: <hostname> <1>
+      ingestionKey: <ingestionKey>
+      port: 6514
+workload: |
+  type: workload
+  auths:
+    ghcr.io:
+      username: <github user> <2>
+      password: <github token>
+  compose:
+    archive: <archive> <3>
+----
++
+<1> where <hostname> and <ingestionKey> were noted earlier.
+<2> where <github user> and <github token> are from your personal GitHub account. 
+<3> where <archive> was created in the *Create a base64 encoded tar archive*<<base64-encoded-archive>> step.
 
-An example contract is shown below.
+An example contract using the pre-built image is shown below.
 
 [NOTE]
 ====
