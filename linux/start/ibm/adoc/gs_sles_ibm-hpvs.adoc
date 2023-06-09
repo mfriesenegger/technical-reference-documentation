@@ -906,7 +906,7 @@ Comment out this line and uncomment the line above to write log information to t
 ----
 systemctl enable --now rsyslog
 systemctl status rsyslog
-----
+
 
 
 == Build, publish, and define
@@ -1192,7 +1192,6 @@ env: |
       hostname: <hostname> <1>
       port: 6514
       ingestionKey: <ingestionKey>
-
 ----
 +
 <1> where <hostname> and <ingestionKey> were noted earlier.
