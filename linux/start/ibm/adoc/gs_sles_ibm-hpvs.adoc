@@ -1564,7 +1564,8 @@ The attestation record, also referred to as the https://cloud.ibm.com/docs/vpc?t
 
 The recommended method to access the attestation document is via the workload.
 The https://cloud.ibm.com/docs/vpc?topic=vpc-financial-transaction-confidential-computing-on-hyper-protect-virtual-server-for-vpc[PayNow Node.js application] application developers added API calls that provide an https://github.com/ibm-hyper-protect/paynow-website/blob/main/app/app.js#L42[encrypted] or an https://github.com/ibm-hyper-protect/paynow-website/blob/main/app/app.js#L47[unencrypted] attestation document.
-This guide will provide the steps to access the encrypted attetation document and verify the attestation data of a deployed PayNow Node.js application.
+
+Follow the steps below to access the encrypted attestation document and verify the attestation data of a deployed PayNow Node.js application.
 
 . Enable the workload to access the attestation data.
 
@@ -1615,22 +1616,25 @@ workload: |
   type: workload
   compose:
     archive: H4sIAAAAAAAAA+3UzW7bMAwHcJ/zFELucahP2gYG7LjjXkG2mNRoXQdWtrZvP6XBsCyHboeuW7H/ 
-attestationPublicKey: <attest-pubkey> <1>
+attestationPublicKey: <attest-pubkey>
 ----
 +
-<1> where the output of the following command replaces the *<attest-pubkey>*.
+where the output of the following command replaces the <attest-pubkey>.
 +
 `IFS=$'\n'; echo -n \"; for line in $(cat attest-public-key.pem); do echo -n $line"\n"; done; echo \"`
 
 . Deploy the workload either in IBM Cloud or on-premises.
 
 . Enter https://<ip address>:8443//api/v1/attestation to access the encrypted attestation document.
+//
 +
 The floating IP address noted earlier for the VPC deployment in IBM Cloud.
 +
 The IP address assigned to the HPCR VM running on the KVM host.
 
 . Save the encrypted attestation document to `se-checksums.txt.enc`.
+//
++
 The file can be save on the local system where the Docker Compose file is located.
 
 . Use the following script to decrypt the encrypted attestation document.
@@ -1683,6 +1687,8 @@ sha256sum slebci-paynow-website-contract.yml
 ----
 
 .. Compare the output of the above command with the `user-data` line in the `se-checksums.txt` attestation document.
+//
++
 If the checksums match then the contract used to start the workload is same as its source.
 
 A similar verification process can be done for the other items listed in the attestation document.
