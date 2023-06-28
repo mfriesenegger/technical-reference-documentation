@@ -53,11 +53,9 @@ include::./common_docinfo_vars.adoc[]
 :product2_full: SUSE Linux Enterprise Server on IBM Z and LinuxONE
 :product2_version: 15 SP5
 :product2_url: https://www.suse.com/products/systemz/
-:product3: IBM HPVS
-:product3_full: IBM Hyper Protect Virtual Servers
-:product3_url: https://www.ibm.com/products/hyper-protect-virtual-servers 
 :hpvs: IBM HPVS
 :hpvs_full: IBM Hyper Protect Virtual Servers
+:hpvs_url: https://www.ibm.com/products/hyper-protect-virtual-servers 
 :hpvs_onprem: {hpvs_full}
 :hpvs_onprem_ver: 2.1.x
 :hpvs_cloud: IBM Cloud Hyper Protect Virtual Servers
@@ -228,10 +226,10 @@ The following high level infrastructure prerequisites are needed if you would li
 +
 {product2} will provide the IBM Secure Execution enabled Kernel-based Virtual Machine (KVM) host.
 
-* IBM Hyper Protect Virtual Servers {hpvs_onprem_ver}
+* {hpvs_full} {hpvs_onprem_ver}
 //
 +
-A https://www.ibm.com/docs/en/hpvs/2.1.x?topic=trial-program[trial program] for IBM Hyper Protect Virtual Servers and Crypto Express Network API for Secure Execution Enclaves is available from IBM.
+A https://www.ibm.com/docs/en/hpvs/2.1.x?topic=trial-program[trial program] for {hpvs_full} and Crypto Express Network API for Secure Execution Enclaves is available from IBM.
 +
 //
 Detailed system requirements can be found in the https://www.ibm.com/docs/en/hpvs/2.1.x?topic=servers-system-requirements[{hpvs_onprem} {hpvs_onprem_ver} documentation].
@@ -529,7 +527,7 @@ To simplify the preparation, the information and steps provided in following sec
 
 ==== Verify required hardware and enable IBM Secure Execution technology
 
-. Review the IBM Hyper Protect Virtual Servers 2.1.x https://www.ibm.com/docs/en/hpvs/2.1.x?topic=servers-system-requirements#hardware-requirements[Hardware requirements]. 
+. Review the {hpvs_full} 2.1.x https://www.ibm.com/docs/en/hpvs/2.1.x?topic=servers-system-requirements#hardware-requirements[Hardware requirements]. 
 
 . Confirm that the https://www.ibm.com/docs/en/hpvs/2.1.x?topic=servers-system-requirements#additional-hardware-requirements-for-the-kvm-host[Feature Code 115 Secure Execution for Linux] has been ordered and installed.
 
@@ -1574,12 +1572,12 @@ Press `Ctrl + ]` keys to disconnect from the VM console.
 
 . Open a new Web browser window or tab.
 
-. Enter `\https://<ip address>:8443`, where `<ip address>` is either:
+. Enter `\https://<ip address>:8443`, where `<ip address>` is one of the following:
 +
 --
-* The floating IP address noted earlier for the VPC deployment in IBM Cloud.
+* the floating IP address noted earlier for the VPC deployment in IBM Cloud.
 
-* The IP address assigned to the HPCR VM running on the KVM host.
+* the IP address assigned to the HPCR VM running on the KVM host.
 
 [NOTE]
 ====
@@ -1593,30 +1591,35 @@ image::paynow-website.png[PayNow UI, scaledwidth="75%", align="center"]
 
 . Click the __PayNow__ button.
 
-. Enter example PII and credit card information.
+. Enter example personally identifiable information (PII) and credit card information.
 
 
 ==== Review the logs
 
 . Access the log information.
 +
-* Use the following to review the logs of the IBM Cloud Hyper Protect Virtual Servers for VPC instance.
+* Use the following to review the logs of the {hpvs_cloud} for VPC instance.
 +
 .. Return to the https://cloud.ibm.com/ window or tab where you created the logging service.
 +
 .. Verify that log information is displayed.
 +
-* Use the following to review the logs of the on-premises IBM Hyper Protect Virtual Servers Container Runtime VM.
+* Use the following to review the logs of the on-premises {hpvs_onprem} Container Runtime VM.
 +
-.. ssh to the rsyslog server.
+.. Log into the rsyslog server with `ssh`.
 +
-.. `less /var/log/hpcr.log`
+.. Display the log file on the command line.
++
+[source, console]
+----
+less /var/log/hpcr.log
+----
 
-. Review the log and find the following:
+. Review the log information and find the entries:
 
-.. Entries where the `slebci-paynow-website` container image is being pulled from the container registry.
+.. where the `slebci-paynow-website` container image is being pulled from the container registry.
 
-.. Entries where the `slebci-paynow-website` container image being started.
+.. where the `slebci-paynow-website` container image being started.
 //
 +
 For example:
@@ -1635,7 +1638,7 @@ slebci-paynow-website hpcr-container debug Container service completed successfu
 Date and time stamps for entries have been removed from the logging output examples shown here.
 ====
 
-.. Entries for PayNow application API calls.
+.. for PayNow application API calls.
 //
 +
 For example:
@@ -1650,14 +1653,13 @@ slebci-paynow-website compose-paynow-1 info GET /api/v1/transactions
 
 == Manage
 
-The manage section focuses on steps in the <<Workflow>> that introduce additional ways to interact with the confidential containized workload.
+This section focuses on steps in the <<Workflow>> that introduce additional ways to interact with the confidential containized workload.
 
 === Enable and verify attestation
 
-The IBM HyperProtect Platform container runtime generates attestation data as it starts.
-The attestation data creation process is the same in https://cloud.ibm.com/docs/vpc?topic=vpc-about-attestation[IBM Cloud] and https://www.ibm.com/docs/en/hpvs/2.1.x?topic=servers-attestation[on-premises] storing the data in `/var/hyperprotect` on the container runtime.
-Several attestation related files are stored in `/var/hyperprotect`.
-The attestation record, also referred to as the https://cloud.ibm.com/docs/vpc?topic=vpc-about-attestation#attestation_doc[attestation document], contains checksums which are used to verify the integrity of the environment where a workload starts.
+The {hpp} container runtime generates attestation data as it starts.
+The attestation data creation process is the same in https://cloud.ibm.com/docs/vpc?topic=vpc-about-attestation[IBM Cloud] and https://www.ibm.com/docs/en/hpvs/2.1.x?topic=servers-attestation[on-premises] storing several attestation-related files in `/var/hyperprotect` on the container runtime.
+The attestation record (also referred to as the https://cloud.ibm.com/docs/vpc?topic=vpc-about-attestation#attestation_doc[attestation document]) contains checksums, which are used to verify the integrity of the environment where a workload starts.
 
 The recommended method to access the attestation document is via the workload.
 The https://cloud.ibm.com/docs/vpc?topic=vpc-financial-transaction-confidential-computing-on-hyper-protect-virtual-server-for-vpc[PayNow Node.js application] application developers added API calls that provide an https://github.com/ibm-hyper-protect/paynow-website/blob/main/app/app.js#L42[encrypted] or an https://github.com/ibm-hyper-protect/paynow-website/blob/main/app/app.js#L47[unencrypted] attestation document.
@@ -1666,8 +1668,10 @@ Follow the steps below to access the encrypted attestation document and verify t
 
 . Enable the workload to access the attestation data.
 
-.. Add `volumes` section to `docker-compose.yml`.
-For example if you are using the pre-built PayNow Node.js application container image.
+.. Add `volumes` section to your Docker Compose file.
+//
++
+For example, if you are using the pre-built PayNow Node.js application container image, update your `docker-compose.yml` as follows:
 +
 [source, yaml]
 ----
@@ -1691,7 +1695,7 @@ services:
 +
 [NOTE]
 ====
-You will be asked to define a pass phrase when creating the private key as well as provide the same pass phrase when creating public portion of the key. 
+You will be asked to define a passphrase when creating the private key as well as provide the same passphrase when creating public portion of the key. 
 ====
 +
 [source, console]
@@ -1700,12 +1704,7 @@ openssl genpkey -aes256 -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -out attest
 openssl pkey -in attest-private-key.pem -out attest-public-key.pem -pubout
 ----
 
-.. Add `attestationPublicKey` to the contract.
-+
-[NOTE]
-====
-A portion of the contract file is shown.
-====
+.. Add `attestationPublicKey` to the contract file (the relevant portion is shown below).
 +
 [source, yaml]
 ----
@@ -1716,13 +1715,16 @@ workload: |
 attestationPublicKey: <attest-pubkey>
 ----
 +
-where the output of the following command replaces the <attest-pubkey>.
+where the output of the following command replaces `<attest-pubkey>`.
 +
-`IFS=$'\n'; echo -n \"; for line in $(cat attest-public-key.pem); do echo -n $line"\n"; done; echo \"`
+[source, console]
+----
+IFS=$'\n'; echo -n \"; for line in $(cat attest-public-key.pem); do echo -n $line"\n"; done; echo \"
+----
 
 . Deploy the workload either in IBM Cloud or on-premises.
 
-. Enter https://<ip address>:8443//api/v1/attestation to access the encrypted attestation document.
+. Enter `\https://<ip address>:8443//api/v1/attestation` to access the encrypted attestation document.
 //
 +
 The floating IP address noted earlier for the VPC deployment in IBM Cloud.
