@@ -1693,16 +1693,16 @@ services:
 
 .. In the directory where the Docker Compose file exists, the following commands will create the private/public key pair for attestation encryption.
 +
-[NOTE]
-====
-You will be asked to define a passphrase when creating the private key as well as provide the same passphrase when creating public portion of the key. 
-====
-+
 [source, console]
 ----
 openssl genpkey -aes256 -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -out attest-private-key.pem
 openssl pkey -in attest-private-key.pem -out attest-public-key.pem -pubout
 ----
++
+[NOTE]
+====
+You will be asked to define a passphrase when creating the private key as well as provide the same passphrase when creating public portion of the key. 
+====
 
 .. Add `attestationPublicKey` to the contract file (the relevant portion is shown below).
 +
@@ -1724,21 +1724,19 @@ IFS=$'\n'; echo -n \"; for line in $(cat attest-public-key.pem); do echo -n $lin
 
 . Deploy the workload either in IBM Cloud or on-premises.
 
-. Enter `\https://<ip address>:8443//api/v1/attestation` to access the encrypted attestation document.
+. Open your Web browser to `\https://<ip address>:8443//api/v1/attestation` to access the encrypted attestation document.
 //
 +
-The floating IP address noted earlier for the VPC deployment in IBM Cloud.
-+
-The IP address assigned to the HPCR VM running on the KVM host.
+Replace `<ip address>` with the floating IP address noted earlier for the VPC deployment in IBM Cloud or the IP address assigned to the HPCR VM running on the KVM host.
 
 . Save the encrypted attestation document to `se-checksums.txt.enc`.
 //
 +
-The file can be save on the local system where the Docker Compose file is located.
+The file can be saved on the local system where the Docker Compose file is located.
 
 . Use the following script to decrypt the encrypted attestation document.
 +
-[source, console]
+[source, bash]
 ----
 #!/bin/bash
 #
@@ -1778,7 +1776,7 @@ echo -n "$PASSWORD" | openssl aes-256-cbc -d -pbkdf2 -in "$MESSAGE_ENC" -pass st
 
 . Verify the integrity of workload contract.
 
-..  Generate a sha256 checksum of the local contract file.
+..  Generate a SHA256 checksum of the local contract file.
 +
 [source, console]
 ----
@@ -1788,9 +1786,12 @@ sha256sum slebci-paynow-website-contract.yml
 .. Compare the output of the above command with the `user-data` line in the `se-checksums.txt` attestation document.
 //
 +
-If the checksums match then the contract used to start the workload is same as its source.
-
+If the checksums match, then the contract used to start the workload is same as its source.
++
+[TIP]
+====
 A similar verification process can be done for the other items listed in the attestation document.
+====
 
 
 == Summary
@@ -1802,15 +1803,20 @@ A similar verification process can be done for the other items listed in the att
 // - Next steps (unordered list of 2-4 further learning resources)
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-In this guide, you have been introduced to containized confidential computing with SUSE Linux Enterprise Base Container Images using the IBM Hyper Protect Platform.
-The PayNow website application was already built for you on SUSE Linux Enterprise Base Container images.
-You deployed the application securely in a confidential computing environment via a workload contract using the IBM Hyper Protect Platform either in the cloud or on-premise.
+Containerized confidential computing enalbes you to protect your workload data no matter where it is running.
+This guide featured the PayNow Website application.
+It was built on {product1_full} and you securely deployed it on the {hpp}, either in the cloud or on-premises.
 
-Now that you have taken your first steps, you are encouraged to learn more about the following.
+Continue your learning journey with the following additional resources:
 
-* Accelerate Application Development with Open, Secure Containers with https://www.suse.com/products/base-container-images/[SUSE Linux Enterprise Base Container Images].
-* https://documentation.suse.com/trd/linux/tbd[Build] a trusted PayNow Website container on a SLE Base Container image using https://cloud.ibm.com/docs/vpc?topic=vpc-about-hpsb[IBM Cloud Hyper Protect Secure Build].
-* Learn more about Confidential computing with LinuxONE for deployments in https://cloud.ibm.com/docs/vpc?topic=vpc-about-se[IBM Cloud] and https://community.ibm.com/community/user/ibmz-and-linuxone/blogs/nicolas-mding/2022/10/06/ibm-hyper-protect-virtual-servers-v21[on-premises].
+* Accelerate Application Development with Open, Secure Containers with https://www.suse.com/products/base-container-images/[{product1_full}].
+
+* https://documentation.suse.com/trd/linux/tbd[Build] a trusted PayNow Website container on {product1_full} using https://cloud.ibm.com/docs/vpc?topic=vpc-about-hpsb[{hpp} Secure Build].
+
+* https://cloud.ibm.com/docs/vpc?topic=vpc-about-se[Confidential computing with LinuxONE] in IBM Cloud.
+
+* https://community.ibm.com/community/user/ibmz-and-linuxone/blogs/nicolas-mding/2022/10/06/ibm-hyper-protect-virtual-servers-v21[{hpvs_onprem} {hpvs_onprem_ver}].
+
 
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 // Do not modify below this break.
