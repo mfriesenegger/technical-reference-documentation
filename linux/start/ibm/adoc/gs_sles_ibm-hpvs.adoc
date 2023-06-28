@@ -962,7 +962,7 @@ StreamDriver.Authmode="x509/certvalid"
 )
 ----
 +
-<1> the logging information will be written to `/var/log/hpcr.log`.
+<1> Logging information will be written to `/var/log/hpcr.log`.
 Comment out this line and uncomment the line above to write log information to the journal.
 
 . Enable, start and verify that the rsyslog service is `running`.
@@ -1064,7 +1064,7 @@ You can go to <<Define the contract>> to use the PayNow Node.js application cont
 
 Access to the same Linux on s390x instance that built the PayNow Node.js application container image is required to publish the image.
 These steps will use `podman` to publish the OCI-compliant PayNow Node.js application container image.
-A properly configured github account is required to publish the image to your https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry[GitHub Container registry].
+A properly configured GitHub account is required to publish the image to your https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry[GitHub Container registry].
 
 . Tag the PayNow Node.js application container image to your GitHub account.
 +
@@ -1075,7 +1075,7 @@ podman tag localhost/slebci-paynow-website:latest ghcr.io/<github user>/slebci-p
 +
 [NOTE]
 ====
-Replace _<github user>_ with your personal github user id.
+Replace _<github user>_ with your personal GitHub username.
 ====
 
 . Log into the GitHub Container registry.
@@ -1090,9 +1090,9 @@ Login Succeeded!
 +
 [NOTE]
 ====
-Replace _<github user>_ with your personal github user id.
+Replace _<github user>_ with your personal GitHub username.
 
-Replace _<github token>_ with your personal github access token.
+Replace _<github token>_ with your personal GitHub access token.
 ====
 
 . Push the PayNow Node.js application container image.
@@ -1119,7 +1119,7 @@ Storing signatures
 +
 [NOTE]
 ====
-Replace _<github user>_ with your personal github user id.
+Replace _<github user>_ with your personal GitHub username.
 ====
 
 . Remove the PayNow Node.js application container image.
@@ -1162,7 +1162,7 @@ e71fdf2e7ad357830ece71bfc30367f52ab7afa74401d1506cefcb091a62064b
 +
 [NOTE]
 ====
-Replace _<github user>_ with your personal github user id.
+Replace _<github user>_ with your personal GitHub username.
 ====
 
 . Logout of ghcr.io.
@@ -1225,7 +1225,7 @@ services:
 +
 [NOTE]
 ====
-Replace _<github user>_ with your personal github user id.
+Replace _<github user>_ with your personal GitHub username.
 
 Replace _<github digest>_ with the digest information for the in published in your GitHub Container registry.
 ====
@@ -1324,8 +1324,8 @@ workload: |
     archive: <archive> <2>
 ----
 +
-<1> where <github user> and <github token> are from your personal GitHub account. 
-<2> where <archive> was created in the *Create a base64 encoded tar archive*<<base64-encoded-archive>> step.
+<1> where <github user> and <github token> are for your personal GitHub account. 
+<2> where <archive> was created in the *Create a base64 encoded tar archive* <<base64-encoded-archive>> step.
 
 An example contract using the IBM Cloud logging service with the pre-built image is shown below.
 
@@ -1404,7 +1404,7 @@ Follow these steps to deploy your confidential container workload on IBM Cloud H
 
 .. Change __Architecture__ to `IBM Z, LinuxONE`.
 
-.. Use the slider under __Confidential computing__ to enable `Run your workoad with an OS and a profile protected by Secure Execution`.
+.. Use the slider under __Confidential computing__ to enable `Run your workload with an OS and a profile protected by Secure Execution`.
 
 .. Verify that the __Zone__ in __Location__ matches the location (zone) within the region that you noted earlier.
 
@@ -1451,41 +1451,69 @@ An on-premises deployment will prepared and started via the CLI on the KVM host.
 mkdir /var/lib/libvirt/images/slebci-paynow-website
 ----
 
-. Copy the HPCR image file from the location noted in a previous step<<note-hpcr-image-location>> to `/var/lib/libvirt/images/slebci-paynow-website`.
+. Copy the HPCR image file from the location noted in a previous step <<note-hpcr-image-location>> to `/var/lib/libvirt/images/slebci-paynow-website`.
 
-. Create the cloud configuration files and init-disk iso.
+. Create the cloud configuration files and init-disk ISO.
 
-.. `vi /var/lib/libvirt/images/slebci-paynow-website/meta-data`
+.. Create the `meta-data` file in the directory created above.
+//
++
+For example:
 +
 [source, console]
+----
+vi /var/lib/libvirt/images/slebci-paynow-website/meta-data
+----
++
+Add the following line to the file:
++
+[listing]
 ----
 local-hostname: slebci-paynow-website
 ----
 
-.. `vi /var/lib/libvirt/images/slebci-paynow-website/vendor-data`
+.. Create the `vendora-data` file in the same directory.
++
+For example:
 +
 [source, console]
+----
+vi /var/lib/libvirt/images/slebci-paynow-website/vendor-data
+----
++
+Add the following contents to the `vendor-data` file:
++
+[listing]
 ----
 #cloud-config
 users:
 - default
 ----
 
-.. Copy the `slebci-paynow-website-contract.yml` contract file from the local system to `/var/lib/libvirt/images/slebci-paynow-website/user-data` on the KVM host.
+.. Copy the `slebci-paynow-website-contract.yml` contract file from the local system to the `/var/lib/libvirt/images/slebci-paynow-website/user-data` directory on the KVM host.
 
-.. Create `init-disk` iso.
+.. Create the `init-disk` ISO image.
 +
 [source, console]
 ----
-mkisofs -output /var/lib/libvirt/images/slebci-paynow-website/init-disk -volid cidata -joliet -rock /var/lib/libvirt/images/slebci-paynow-website/user-data /var/lib/libvirt/images/slebci-paynow-website/meta-data /var/lib/libvirt/images/slebci-paynow-website/vendor-data
+mkisofs \
+  -output /var/lib/libvirt/images/slebci-paynow-website/init-disk \
+  -volid cidata -joliet -rock \
+  /var/lib/libvirt/images/slebci-paynow-website/user-data \
+  /var/lib/libvirt/images/slebci-paynow-website/meta-data \
+  /var/lib/libvirt/images/slebci-paynow-website/vendor-data
 ----
 
-. Generate a MAC address for the HPCR VM.
-
-.. Run `macgen.py` and note the output.
-Here is an example when run.
+. Generate a MAC address for the HPCR VM with `macgen.py`.
 +
 [source, console]
+----
+macgen.py
+----
++
+You should see something like:
++
+[listing]
 ----
 # macgen.py 
 52:54:00:02:77:72
@@ -1493,41 +1521,43 @@ Here is an example when run.
 
 . Use the generated MAC address to define a host entry with a static IP address in your DHCP server.
 
-. Define and start the `slebci-paynow-website` VM with the following command.
+. Define and start the `slebci-paynow-website` VM.
 +
 [source, console]
 ----
 virt-install \
---name=slebci-paynow-website \
---osinfo ubuntu20.04 \
---memory=3815 \
---vcpus vcpu.placement=static,vcpus=2 \
---boot hd \
---cpu mode=host-model,check=partial \
---clock offset=utc \
---events on_poweroff=destroy,on_reboot=restart,on_crash=destroy \
---disk /var/lib/libvirt/images/slebci-paynow-website/ibm-hyper-protect-container-runtime-23.3.0.qcow2,driver.iommu=on,target.bus=virtio,\
+  --name=slebci-paynow-website \
+  --osinfo ubuntu20.04 \
+  --memory=3815 \
+  --vcpus vcpu.placement=static,vcpus=2 \
+  --boot hd \
+  --cpu mode=host-model,check=partial \
+  --clock offset=utc \
+  --events on_poweroff=destroy,on_reboot=restart,on_crash=destroy \
+  --disk /var/lib/libvirt/images/slebci-paynow-website/ibm-hyper-protect-container-runtime-23.3.0.qcow2,driver.iommu=on,target.bus=virtio,\
 boot.order=1 \
---disk /var/lib/libvirt/images/slebci-paynow-website/slebci-paynow-website-data.qcow2,size=10,format=qcow2,cache=none,\
+  --disk /var/lib/libvirt/images/slebci-paynow-website/slebci-paynow-website-data.qcow2,size=10,format=qcow2,cache=none,\
 driver.discard=ignore,driver.iommu=on,target.bus=virtio \
---disk /var/lib/libvirt/images/slebci-paynow-website/init-disk,format=raw,cache=none,driver.discard=ignore,driver.iommu=on,\
+  --disk /var/lib/libvirt/images/slebci-paynow-website/init-disk,format=raw,cache=none,driver.discard=ignore,driver.iommu=on,\
 target.bus=virtio \
---controller type=pci,index=0,model=pci-root \
---network type=direct,source=eth0,source.mode=bridge,model.type=virtio,driver.name=vhost,driver.iommu=on,mac.address=<macaddress> \ <1>
---console pty,target.type=sclp,target.port=0 \
---audio id=1,type=none \
---memballoon none \
---panic s390 \
---channel none \
---rng none
+  --controller type=pci,index=0,model=pci-root \
+  --network type=direct,source=eth0,source.mode=bridge,model.type=virtio,driver.name=vhost,driver.iommu=on,mac.address=<macaddress> \ <1>
+  --console pty,target.type=sclp,target.port=0 \
+  --audio id=1,type=none \
+  --memballoon none \
+  --panic s390 \
+  --channel none \
+  --rng none
 ----
 +
-<1> where <macaddress> was noted above.
+<1> Be sure to replace `<macaddress>` in this command with the MAC address you noted in the previous step.
 
 . The VM console will be displayed and the HPCR VM will boot.
-Watch for the following within the console as the instance is being started:
+//
 +
-[source, console]
+Watch for the following in the console as the instance is being started:
++
+[listing]
 ----
 VSI has started successfully.
 ----
@@ -1544,16 +1574,18 @@ Press `Ctrl + ]` keys to disconnect from the VM console.
 
 . Open a new Web browser window or tab.
 
-. Enter `\https://<ip address>:8443` where <ip address> is either:
+. Enter `\https://<ip address>:8443`, where `<ip address>` is either:
 +
-The floating IP address noted earlier for the VPC deployment in IBM Cloud.
-+
-The IP address assigned to the HPCR VM running on the KVM host.
-+
+--
+* The floating IP address noted earlier for the VPC deployment in IBM Cloud.
+
+* The IP address assigned to the HPCR VM running on the KVM host.
+
 [NOTE]
 ====
 Your Web browser may display a warning about a insecure connection and a invalid certificate because the application uses a self-signed certificate.
 ====
+--
 
 . You should see that the PayNow application is running.
 +
@@ -1625,7 +1657,7 @@ The manage section focuses on steps in the <<Workflow>> that introduce additiona
 The IBM HyperProtect Platform container runtime generates attestation data as it starts.
 The attestation data creation process is the same in https://cloud.ibm.com/docs/vpc?topic=vpc-about-attestation[IBM Cloud] and https://www.ibm.com/docs/en/hpvs/2.1.x?topic=servers-attestation[on-premises] storing the data in `/var/hyperprotect` on the container runtime.
 Several attestation related files are stored in `/var/hyperprotect`.
-The attestation record, also referred to as the https://cloud.ibm.com/docs/vpc?topic=vpc-about-attestation#attestation_doc[attestation document], contains checksums which are used to verify the integrityof the environment where a workload starts.
+The attestation record, also referred to as the https://cloud.ibm.com/docs/vpc?topic=vpc-about-attestation#attestation_doc[attestation document], contains checksums which are used to verify the integrity of the environment where a workload starts.
 
 The recommended method to access the attestation document is via the workload.
 The https://cloud.ibm.com/docs/vpc?topic=vpc-financial-transaction-confidential-computing-on-hyper-protect-virtual-server-for-vpc[PayNow Node.js application] application developers added API calls that provide an https://github.com/ibm-hyper-protect/paynow-website/blob/main/app/app.js#L42[encrypted] or an https://github.com/ibm-hyper-protect/paynow-website/blob/main/app/app.js#L47[unencrypted] attestation document.
