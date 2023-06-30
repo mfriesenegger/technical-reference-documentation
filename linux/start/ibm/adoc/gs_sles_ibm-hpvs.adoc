@@ -1803,7 +1803,7 @@ A similar verification process can be done for the other items listed in the att
 // - Next steps (unordered list of 2-4 further learning resources)
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-Containerized confidential computing enalbes you to protect your workload data no matter where it is running.
+Containerized confidential computing enables you to protect your workload data no matter where it is running.
 This guide featured the PayNow Website application.
 It was built on {product1_full} and you securely deployed it on the {hpp}, either in the cloud or on-premises.
 
