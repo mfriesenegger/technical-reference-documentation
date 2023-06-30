@@ -1470,7 +1470,7 @@ Add the following line to the file:
 local-hostname: slebci-paynow-website
 ----
 
-.. Create the `vendora-data` file in the same directory.
+.. Create the `vendor-data` file in the same directory.
 +
 For example:
 +
