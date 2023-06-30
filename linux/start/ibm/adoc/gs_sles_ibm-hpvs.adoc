@@ -1488,7 +1488,7 @@ users:
 - default
 ----
 
-.. Copy the `slebci-paynow-website-contract.yml` contract file from the local system to the `/var/lib/libvirt/images/slebci-paynow-website/user-data` directory on the KVM host.
+.. Copy the `slebci-paynow-website-contract.yml` contract file from the local system to the `/var/lib/libvirt/images/slebci-paynow-website/user-data` file on the KVM host.
 
 .. Create the `init-disk` ISO image.
 +
